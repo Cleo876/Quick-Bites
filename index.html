@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Changed title to reflect new name -->
+    <title>Quick Bite - School Lunch Pre-order</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Font (Inter) - Preserved as requested -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Tailwind Configuration - NEW "Snack-like" Palette -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              // NEW bright and friendly "cafeteria" color palette
+              'brand-primary': tailwind.colors.orange[500], // Vibrant Orange
+              'brand-secondary': tailwind.colors.orange[600], // Darker Orange (hover)
+              'brand-bg': tailwind.colors.slate[100],      // Light gray page background
+              'brand-surface': tailwind.colors.white,      // White for cards, nav, modals
+              'brand-dark': tailwind.colors.slate[800],      // Dark text
+              'brand-light': tailwind.colors.slate[500],     // Light text / icons
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      /* Updated scrollbar styling to match new theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F1F5F9; /* brand-bg */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #F97316; /* brand-primary */
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #EA580C; /* brand-secondary */
+      }
+    </style>
+</head>
+
+<!-- Updated body classes for light theme -->
+<body class="bg-brand-bg text-brand-dark font-sans antialiased">
+
+    <!-- Main Application Wrapper -->
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <!-- ===== Header & Navigation ===== -->
+        <!-- Updated header classes for light theme -->
+        <header class="bg-brand-surface shadow-md sticky top-0 z-50">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    
+                    <!-- Logo / Brand Name - Updated name and colors -->
+                    <a href="#" class="flex items-center space-x-2" onclick="showPage('page-home', this)">
+                        <!-- Simple SVG Logo: Stylized Fork & 'Byte' (Circle) -->
+                        <svg class="h-8 w-8 text-brand-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <span class="text-2xl font-bold text-brand-primary">Quick</span>
+                        <span class="text-2xl font-medium text-brand-dark">Bite</span>
+                    </a>
+
+                    <!-- Desktop Navigation Links - Updated colors -->
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" class="nav-link text-brand-primary font-medium" onclick="showPage('page-home', this)">Home</a>
+                        <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-menu', this)">Menu</a>
+                        <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-orders', this)">My Orders</a>
+                        <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-profile', this)">Profile</a>
+                        
+                        <!-- Notification Bell (Desktop) -->
+                        <a href="#" class="nav-link relative text-brand-light hover:text-brand-primary transition duration-300" onclick="showPage('page-orders', this); clearNotifications();" aria-label="View Notifications">
+                            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                            <span id="notification-count-desktop" class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                        </a>
+
+                        <!-- Cart Icon (Desktop) - Updated colors -->
+                        <button onclick="showCartModal()" class="relative text-brand-light hover:text-brand-primary transition duration-300" aria-label="Open Cart">
+                            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                            </svg>
+                            <span id="cart-count-desktop" class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Burger Button -->
+                    <div class="md:hidden flex items-center">
+                        <!-- Notification Bell (Mobile) -->
+                         <a href="#" class="nav-link relative text-brand-light hover:text-brand-primary transition duration-300 mr-4" onclick="showPage('page-orders', this); clearNotifications();" aria-label="View Notifications">
+                            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                            <span id="notification-count-mobile" class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                        </a>
+
+                        <!-- Cart Icon (Mobile) - Updated colors -->
+                         <button onclick="showCartModal()" class="relative text-brand-light hover:text-brand-primary transition duration-300 mr-4" aria-label="Open Cart">
+                            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                            </svg>
+                            <span id="cart-count-mobile" class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </button>
+
+                        <!-- Burger Button - Updated colors -->
+                        <button id="burger-btn" class="text-brand-light hover:text-brand-primary" aria-label="Open Menu">
+                            <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path id="burger-open" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                <path id="burger-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Mobile Menu (Dropdown) - Updated colors -->
+            <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 right-0 bg-brand-surface shadow-xl z-40">
+                <a href="#" class="nav-link block text-brand-primary text-lg font-medium px-5 py-4" onclick="showPage('page-home', this)">Home</a>
+                <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-menu', this)">Menu</a>
+                <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-orders', this)">My Orders</a>
+                <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-profile', this)">Profile</a>
+            </div>
+        </header>
+
+        <!-- ===== Main Content Area ===== -->
+        <main id="main-content" class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+
+            <!-- === Page 1: Home === -->
+            <section id="page-home" class="page-section">
+                <!-- Hero Section - Updated colors and image placeholder -->
+                <div class="bg-brand-surface rounded-xl shadow-lg p-8 md:p-12 mb-12 flex flex-col md:flex-row items-center overflow-hidden">
+                    <div class="md:w-1/2 mb-6 md:mb-0">
+                        <h1 class="text-4xl md:text-6xl font-extrabold text-brand-dark mb-4 leading-tight">Skip the line.</h1>
+                        <h2 class="text-3xl md:text-5xl font-bold text-brand-primary mb-6">Order ahead.</h2>
+                        <p class="text-brand-light text-lg mb-8 max-w-lg">Welcome to Quick Bite, your smart solution to cafeteria queues. Browse the menu, place your order, and get notified when it's ready for pickup.</p>
+                        <button onclick="showPage('page-menu')" class="bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300 transform hover:scale-105">
+                            View Today's Menu
+                        </button>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center">
+                         <img src="https://placehold.co/500x500/F97316/FFFFFF?text=Quick+Bite" alt="App preview" class="rounded-lg shadow-xl"
+                           onerror="this.src='https://placehold.co/500x500/F97316/FFFFFF?text=Premium+Food+Ordering'; this.onerror=null;">
+                    </div>
+                </div>
+
+                <!-- Popular Items Section - Updated colors -->
+                <h2 class="text-3xl font-bold text-brand-dark mb-6">Popular Right Now</h2>
+                <div id="popular-items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Popular items will be injected here by JS -->
+                </div>
+            </section>
+
+            <!-- === Page 2: Menu === -->
+            <section id="page-menu" class="page-section hidden">
+                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">Today's Menu</h1>
+                
+                <!-- Category Filters - Updated colors -->
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <button class="menu-filter-btn bg-brand-primary text-white font-medium py-2 px-5 rounded-full" onclick="filterMenu('all', this)">All</button>
+                    <button class="menu-filter-btn bg-brand-surface text-brand-light hover:text-brand-primary font-medium py-2 px-5 rounded-full" onclick="filterMenu('meal', this)">Meals</button>
+                    <button class="menu-filter-btn bg-brand-surface text-brand-light hover:text-brand-primary font-medium py-2 px-5 rounded-full" onclick="filterMenu('snack', this)">Snacks</button>
+                    <button class="menu-filter-btn bg-brand-surface text-brand-light hover:text-brand-primary font-medium py-2 px-5 rounded-full" onclick="filterMenu('drink', this)">Drinks</button>
+                </div>
+
+                <!-- Menu Items Grid -->
+                <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Menu items will be injected here by JS -->
+                </div>
+            </section>
+
+            <!-- === Page 3: My Orders === -->
+            <section id="page-orders" class="page-section hidden">
+                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">My Orders</h1>
+                
+                <!-- Active Orders - Updated colors -->
+                <h2 class="text-2xl font-bold text-brand-primary mb-4">In Progress</h2>
+                <div id="active-orders-list" class="space-y-4 mb-8">
+                    <!-- JS will populate this -->
+                    <p id="no-active-orders" class="text-brand-light">You have no active orders.</p>
+                </div>
+
+                <!-- Order History - Updated colors -->
+                <h2 class="text-2xl font-bold text-brand-primary mb-4">Order History</h2>
+                <div id="order-history-list" class="space-y-4">
+                    <!-- JS will populate this -->
+                    <p id="no-order-history" class="text-brand-light">You have no past orders.</p>
+                </div>
+            </section>
+
+            <!-- === Page 4: Profile === -->
+            <section id="page-profile" class="page-section hidden">
+                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">My Profile</h1>
+                <!-- Updated colors and placeholder -->
+                <div class="bg-brand-surface rounded-lg shadow-2xl p-8 max-w-2xl mx-auto">
+                    <div class="flex items-center space-x-6 mb-8">
+                        <img class="h-24 w-24 rounded-full shadow-lg" src="https://placehold.co/100x100/F97316/FFFFFF?text=S" alt="Profile Picture">
+                        <div>
+                            <h2 class="text-3xl font-bold text-brand-dark">Shamar Mason</h2>
+                            <p class="text-brand-primary text-lg">Student ID: 20232316</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-sm font-medium text-brand-light">Full Name</label>
+                            <input type="text" value="Shamar Mason" class="mt-1 block w-full bg-brand-bg border border-slate-200 rounded-md shadow-sm py-3 px-4 text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-primary" disabled>
+                        </div>
+                         <div>
+                            <label class="text-sm font-medium text-brand-light">Email Address</label>
+                            <input type="email" value="smason10@stu.themico.edu.jm" class="mt-1 block w-full bg-brand-bg border border-slate-200 rounded-md shadow-sm py-3 px-4 text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-primary" disabled>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-brand-dark mb-3">Dietary Preferences</h3>
+                            <!-- This div will be populated by renderProfilePreferences() -->
+                            <div id="preference-list" class="flex flex-wrap gap-3">
+                                <!-- Example: <span class="bg-brand-primary text-white text-sm font-medium py-1 px-3 rounded-full">No Peanuts</span> -->
+                            </div>
+                            <!-- Updated this to be a button -->
+                            <button onclick="showPreferenceModal()" class="bg-brand-bg text-brand-light text-sm font-medium py-1 px-3 rounded-full mt-3 hover:text-brand-dark">
+                                + Add Preference
+                            </button>
+                        </div>
+                        <button class="w-full bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ===== Footer ===== -->
+        <!-- Updated footer colors and copyright name -->
+        <footer class="bg-brand-surface border-t border-slate-200 mt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+                <p class="text-brand-light">&copy; 2025 Quick Bite. A Mico University College Student Project.</p>
+                <!-- Changed "Inspired by" to "Created by" -->
+                <p class="text-sm text-slate-400 mt-1">Created by Deneisha Larmond, Shamar Mason, Marishka Simms, Santino Peddie, ShaQuan Yee Sing, & Cleon Williams.</p>
+            </div>
+        </footer>
+
+    </div>
+    <!-- End of #app wrapper -->
+
+
+    <!-- ===== Notification Toast ===== -->
+    <!-- This is the "scrolldown bar" you requested, styled as a modern toast notification -->
+    <div id="order-ready-toast" class="fixed top-20 md:top-6 right-6 w-auto max-w-sm bg-brand-surface rounded-xl shadow-2xl p-5 z-[100] border border-slate-200 transform translate-x-[200%] opacity-0 transition-all duration-500 ease-out">
+        <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-brand-primary">
+                <!-- Bell Icon -->
+                <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <h4 class="text-lg font-bold text-brand-dark">Order Ready!</h4>
+                <p id="order-ready-toast-text" class="text-brand-light">Your order is ready for pickup.</p>
+            </div>
+            <button onclick="closeOrderReadyToast()" class="text-brand-light hover:text-brand-dark flex-shrink-0">
+                <!-- Close Icon -->
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ===== New Preference Modal ===== -->
+    <div id="preference-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" onclick="closePreferenceModal()">
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-lg w-full flex flex-col max-h-[80vh]" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-6 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-brand-dark">Add Dietary Preference</h2>
+                <button onclick="closePreferenceModal()" class="text-brand-light hover:text-brand-dark">
+                    <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Preference List -->
+            <div id="preference-options-list" class="p-6 space-y-3 overflow-y-auto">
+                <!-- Preference options will be injected by JS -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-slate-200 mt-auto">
+                <button onclick="closePreferenceModal()" class="w-full bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===== Modals ===== -->
+
+    <!-- Item Details Modal - Updated colors -->
+    <div id="item-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" onclick="closeItemModal()">
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Modal content will be injected by JS -->
+            <div id="item-modal-content" class="p-8">
+                <!-- Example Structure (will be replaced) -->
+                <h2 class="text-3xl font-bold text-brand-dark mb-4">Jerk Chicken</h2>
+                <p class="text-brand-light mb-4">Loading details...</p>
+                <!-- End Example Structure -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal - Updated colors -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" onclick="closeCartModal()">
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-lg w-full flex flex-col max-h-[80vh]" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-6 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-brand-dark">My Order</h2>
+                <button onclick="closeCartModal()" class="text-brand-light hover:text-brand-dark">
+                    <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Cart Items List -->
+            <div id="cart-items-list" class="p-6 space-y-4 overflow-y-auto">
+                <!-- Cart items will be injected here -->
+                <p class="text-brand-light text-center">Your cart is empty.</p>
+            </div>
+
+            <!-- Cart Footer (Total & Checkout) - Updated colors -->
+            <div class="p-6 border-t border-slate-200 mt-auto">
+                <div class="flex justify-between items-center text-xl font-bold mb-6">
+                    <span class="text-brand-dark">Total</span>
+                    <span id="cart-total" class="text-brand-primary">$0 JMD</span>
+                </div>
+                <button id="confirm-order-btn" onclick="confirmOrder()" class="w-full bg-brand-primary text-white text-lg font-bold py-4 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message Modal - Updated colors -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" onclick="closeSuccessModal()">
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full p-8 text-center" onclick="event.stopPropagation()">
+             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-500 mb-6">
+                <svg class="h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+             </div>
+            <h2 class="text-3xl font-bold text-brand-dark mb-4">Order Placed!</h2>
+            <p id="success-message-text" class="text-brand-light text-lg mb-8">Your order (#12346) is confirmed.<br>It will be ready for pickup in <strong>15 minutes</strong>.</p>
+            <button onclick="closeSuccessModal()" class="w-full bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300">
+                Great!
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        // --- JMD Price Formatter ---
+        /**
+         * Formats a number as JMD currency.
+         * @param {number} price - The price as a number (e.g., 1250)
+         * @returns {string} - The formatted string (e.g., "$1,250 JMD")
+         */
+        function formatJMD(price) {
+            return '$' + price.toLocaleString('en-US') + ' JMD';
+        }
+
+        // --- Mock Data (Based on the document) ---
+        // Prices updated to JMD format (e.g., 1250 instead of 12.50)
+        // Prep times updated for snacks
+        const menuData = [
+            {
+                id: 'm1',
+                name: 'Jerk Chicken',
+                category: 'meal',
+                price: 1250,
+                description: 'Spicy, smoky, and authentic. Served with rice & peas and a side of vegetables.',
+                image: 'https://i0.wp.com/louskitchencorner.freybors.com/wp-content/uploads/2023/07/firey-jerk-chicken-with-rice-and-peas.png?resize=856%2C685&ssl=1',
+                nutrition: { calories: 550, allergens: 'Soy, Gluten' },
+                popular: true,
+                prepTime: 15 // minutes
+            },
+            {
+                id: 'm2',
+                name: 'Ackee & Saltfish',
+                category: 'meal',
+                price: 1000,
+                description: "Jamaica's national dish. Served with fried dumplings and breadfruit.",
+                image: 'https://cdn.tasteatlas.com/Images/Dishes/6a1475df2bbf470282966de5df604f2a.jpg?m=facebook',
+                nutrition: { calories: 480, allergens: 'Fish, Gluten' },
+                popular: true,
+                prepTime: 12 // minutes
+            },
+            {
+                id: 'm3',
+                name: 'Stew Beef Lunch',
+                category: 'meal',
+                price: 1100,
+                description: 'Rich beef stew, slow-cooked and served with rice and peas.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzisEtLdUDZyhMSOjAHLPQth1xfIvpYogyP7BNQwBadw41s9o4jFI34V6jJc_6sJTyfyA&usqp=CAU',
+                nutrition: { calories: 600, allergens: 'Gluten' },
+                popular: false,
+                prepTime: 15 // minutes
+            },
+            {
+                id: 'm4',
+                name: 'Beef Patty',
+                category: 'snack',
+                price: 300,
+                description: 'Add-ons available: Cheese, Callaloo, Mega size',
+                image: 'https://cabbieja.com/cdn/shop/products/pattyanccocobread2_6366ebdb-ef21-4ee1-a85b-12fcbdf65f41_530x@2x.jpg?v=1622084505',
+                nutrition: { calories: 300, allergens: 'Gluten, Soy' },
+                popular: true,
+                prepTime: 1 // minutes (Updated)
+            },
+            {
+                id: 'm5',
+                name: 'Egg, Bacon & Cheese Patty',
+                category: 'snack',
+                price: 450,
+                description: 'A Juici™ patty stuffed with egg, bacon, and cheese.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6nnvc3VVRGvsewPuCnx4J5gWZRiDr20CL5Q&s',
+                nutrition: { calories: 450, allergens: 'Gluten, Dairy, Egg' },
+                popular: false,
+                prepTime: 1 // minutes (Updated)
+            },
+            {
+                id: 'm6',
+                name: 'Bottled Water',
+                category: 'drink',
+                price: 200,
+                description: 'Crisp, refreshing spring water.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7ss4XS7wIjXN-UzmHg9RlvwEOwdNNRPu9jw&s',
+                nutrition: { calories: 0, allergens: 'None' },
+                popular: true,
+                prepTime: 1 // minutes
+            },
+            {
+                id: 'm7',
+                name: 'Juciful Orange Juice', // Changed from 'Local Fruit Juice'
+                category: 'drink',
+                price: 350,
+                description: 'Classic Juciful orange juice.', // Changed
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCQOdAWVTNX3n3_UD49KjLSpm7s6VRlWBs_g&s', // Changed
+                nutrition: { calories: 120, allergens: 'None' },
+                popular: false,
+                prepTime: 1 // minutes
+            },
+            {
+                id: 'm8',
+                name: "St. Mary's Banana Chips",
+                category: 'snack',
+                price: 250,
+                description: 'The classic, crispy, and irresistible banana chips.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbDez2r0t_eoHi5EdFvlr0WQpNZNGzZJIgUQ&s',
+                nutrition: { calories: 150, allergens: 'None' },
+                popular: true,
+                prepTime: 1
+            },
+            {
+                id: 'm9',
+                name: 'Soldanza Plantain Chips',
+                category: 'snack',
+                price: 250,
+                description: 'Slightly sweet, perfectly crunchy plantain chips.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScnocXV8-RoAlidPFonI9zqi1XTfxyZPq5_A&s', // <-- UPDATED
+                nutrition: { calories: 160, allergens: 'None' },
+                popular: false,
+                prepTime: 1
+            },
+            {
+                id: 'm10',
+                name: 'Spice Bun & Cheese',
+                category: 'snack',
+                price: 350,
+                description: 'A thick slice of National round spice bun with a slice of creamy cheese.',
+                image: 'https://www.mdjamaicandelights.com/cdn/shop/products/national-spiced-bun-NAT583_69b230a9-f81b-4b41-bcee-40a4d88f559a_1200x1200.png?v=1604394642',
+                nutrition: { calories: 380, allergens: 'Gluten, Dairy' },
+                popular: true,
+                prepTime: 2 // minutes
+            },
+            {
+                id: 'm11',
+                name: 'CranWata', // New Item
+                category: 'drink',
+                price: 250,
+                description: 'Refreshing cranberry-flavored water.',
+                image: 'https://freshandexotic.co.uk/cdn/shop/files/1000045710.jpg?v=1728999366&width=713',
+                nutrition: { calories: 90, allergens: 'None' },
+                popular: false,
+                prepTime: 1 // minutes
+            },
+            {
+                id: 'm12',
+                name: 'Minute Maid', // New Item
+                category: 'drink',
+                price: 350,
+                description: 'Pulpy orange juice.',
+                image: 'https://kansasfoodmarket.com/cdn/shop/products/ci-minute-maid-orange-ab079a666acca39c_580x.jpg?v=1594872069',
+                nutrition: { calories: 110, allergens: 'None' },
+                popular: false,
+                prepTime: 1 // minutes
+            }
+        ];
+
+        // --- App State ---
+        let cart = [];
+        let currentFilter = 'all';
+        let activeOrders = [];
+        let orderHistory = [];
+        let orderUpdateInterval = null;
+        let newNotificationCount = 0;
+        
+        // --- New Profile State ---
+        // { tag: 'internal-tag', name: 'Display Name' }
+        let userPreferences = [
+            { tag: 'peanut', name: 'Peanut-Free' }
+        ];
+        
+        // Updated: Removed 'Gluten-Free'
+        const allPreferences = [
+            { tag: 'peanut', name: 'Peanut-Free' },
+            { tag: 'dairy', name: 'Dairy-Free' },
+            { tag: 'fish', name: 'Fish-Free' },
+            { tag: 'soy', name: 'Soy-Free' },
+            { tag: 'egg', name: 'Egg-Free' },
+            { tag: 'vegetarian', name: 'Vegetarian' },
+            { tag: 'vegan', name: 'Vegan' }
+        ];
+
+        // --- DOM Elements ---
+        const burgerBtn = document.getElementById('burger-btn');
+        const burgerOpen = document.getElementById('burger-open');
+        const burgerClose = document.getElementById('burger-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const pages = document.querySelectorAll('.page-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const menuGrid = document.getElementById('menu-grid');
+        const popularGrid = document.getElementById('popular-items-grid');
+        const filterBtns = document.querySelectorAll('.menu-filter-btn');
+        
+        // Modals
+        const itemModal = document.getElementById('item-modal');
+        const itemModalContent = document.getElementById('item-modal-content');
+        const cartModal = document.getElementById('cart-modal');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartCountDesktop = document.getElementById('cart-count-desktop');
+        const cartCountMobile = document.getElementById('cart-count-mobile');
+        const confirmOrderBtn = document.getElementById('confirm-order-btn');
+        const successModal = document.getElementById('success-modal');
+        const successMessageText = document.getElementById('success-message-text');
+        
+        // Order Page Elements
+        const activeOrdersList = document.getElementById('active-orders-list');
+        const orderHistoryList = document.getElementById('order-history-list');
+        const noActiveOrders = document.getElementById('no-active-orders');
+        const noOrderHistory = document.getElementById('no-order-history');
+        
+        // Profile & Preference Elements
+        const preferenceList = document.getElementById('preference-list');
+        const preferenceModal = document.getElementById('preference-modal');
+        const preferenceOptionsList = document.getElementById('preference-options-list');
+
+        // Notification Elements
+        const notifCountDesktop = document.getElementById('notification-count-desktop');
+        const notifCountMobile = document.getElementById('notification-count-mobile');
+        const orderReadyToast = document.getElementById('order-ready-toast');
+        const orderReadyToastText = document.getElementById('order-ready-toast-text');
+
+
+        // --- Event Listeners ---
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            populateMenu();
+            populatePopular();
+            updateCartUI();
+            updateNotificationBadge(); // Init notification badge
+            renderProfilePreferences(); // Init profile preferences
+        });
+
+        // Burger menu toggle
+        burgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            burgerOpen.classList.toggle('hidden');
+            burgerClose.classList.toggle('hidden');
+        });
+
+        // --- Page Navigation ---
+        function showPage(pageId, clickedLink = null) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show the target page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+            // If navigating to orders page, render the lists and clear notifications
+            if (pageId === 'page-orders') {
+                renderOrders();
+                clearNotifications(); // Clear badge when viewing orders
+            }
+            
+            // If navigating to profile, re-render preferences
+            if (pageId === 'page-profile') {
+                renderProfilePreferences();
+            }
+
+            // Update active nav link
+            navLinks.forEach(link => {
+                link.classList.remove('text-brand-primary'); // Changed from gold
+                link.classList.add('text-brand-light'); // Changed from gray
+            });
+            
+            // Find all links (desktop and mobile) that point to this page
+            const activeLinks = document.querySelectorAll(`.nav-link[onclick*="'${pageId}'"]`);
+            activeLinks.forEach(link => {
+                link.classList.add('text-brand-primary'); // Changed from gold
+                link.classList.remove('text-brand-light'); // Changed from gray
+            });
+            
+            // Close mobile menu on navigation
+            mobileMenu.classList.add('hidden');
+            burgerOpen.classList.remove('hidden');
+            burgerClose.classList.add('hidden');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // --- Menu & Filtering Logic ---
+
+        function populateMenu() {
+            menuGrid.innerHTML = ''; // Clear existing items
+            const filteredData = menuData.filter(item => 
+                currentFilter === 'all' || item.category === currentFilter
+            );
+
+            if (filteredData.length === 0) {
+                 menuGrid.innerHTML = `<p class="text-brand-light col-span-full text-center text-lg">No items found for this category.</p>`;
+                 return;
+            }
+
+            // Updated card styles for light theme
+            filteredData.forEach(item => {
+                menuGrid.innerHTML += `
+                    <div class="bg-brand-surface rounded-xl shadow-md overflow-hidden flex flex-col transition duration-300 hover:shadow-xl">
+                        <img class="h-60 w-full object-cover" src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/600x400/F97316/FFFFFF?text=Image+Error'; this.onerror=null;">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-bold text-brand-dark mb-2">${item.name}</h3>
+                            <p class="text-brand-light mb-4 flex-grow">${item.description}</p>
+                            <div class="flex justify-between items-center mt-4">
+                                <!-- JMD FORMAT: Updated font size to be smaller to fit "JMD" -->
+                                <span class="text-2xl font-extrabold text-brand-primary">${formatJMD(item.price)}</span>
+                                <button onclick="showItemModal('${item.id}')" class="bg-brand-primary text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-brand-secondary transition duration-300">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        function populatePopular() {
+            popularGrid.innerHTML = ''; // Clear existing items
+            const popularData = menuData.filter(item => item.popular);
+
+            // Updated card styles for light theme
+            popularData.forEach(item => {
+                popularGrid.innerHTML += `
+                    <div class="bg-brand-surface rounded-xl shadow-md overflow-hidden flex flex-col transition duration-300 hover:shadow-xl">
+                        <img class="h-60 w-full object-cover" src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/600x400/F97316/FFFFFF?text=Image+Error'; this.onerror=null;">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-bold text-brand-dark mb-2">${item.name}</h3>
+                            <p class="text-brand-light mb-4 flex-grow">${item.description}</p>
+                            <div class="flex justify-between items-center mt-4">
+                                <!-- JMD FORMAT: Updated font size to be smaller to fit "JMD" -->
+                                <span class="text-2xl font-extrabold text-brand-primary">${formatJMD(item.price)}</span>
+                                <button onclick="showItemModal('${item.id}')" class="bg-brand-primary text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-brand-secondary transition duration-300">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMenu(category, clickedBtn) {
+            currentFilter = category;
+            
+            // Updated button styles
+            filterBtns.forEach(btn => {
+                btn.classList.remove('bg-brand-primary', 'text-white');
+                btn.classList.add('bg-brand-surface', 'text-brand-light', 'hover:text-brand-primary');
+            });
+            clickedBtn.classList.add('bg-brand-primary', 'text-white');
+            clickedBtn.classList.remove('bg-brand-surface', 'text-brand-light', 'hover:text-brand-primary');
+
+            populateMenu();
+        }
+
+        // --- Item Details Modal ---
+        function showItemModal(itemId) {
+            const item = menuData.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Updated modal content styles for light theme
+            itemModalContent.innerHTML = `
+                <img class="h-64 w-full object-cover rounded-lg mb-6" src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/600x400/F97316/FFFFFF?text=Image+Error'; this.onerror=null;">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-3xl font-bold text-brand-dark">${item.name}</h2>
+                    <!-- JMD FORMAT: Updated font size -->
+                    <span class="text-2xl font-extrabold text-brand-primary">${formatJMD(item.price)}</span>
+                </div>
+                <p class="text-brand-light mb-6">${item.description}</p>
+                
+                <!-- Nutrition Info (from document) -->
+                <div class="bg-brand-bg rounded-lg p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-brand-dark mb-2">Nutrition & Allergens</h4>
+                    <div class="flex space-x-6 text-brand-light">
+                        <span><strong>Calories:</strong> ${item.nutrition.calories}</span>
+                        <span><strong>Allergens:</strong> ${item.nutrition.allergens}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <label for="item-quantity" class="text-brand-light font-medium">Quantity:</label>
+                        <input id="item-quantity" type="number" value="1" min="1" max="10" class="bg-brand-bg w-20 text-brand-dark rounded-md border border-slate-200 py-2 px-3 text-center focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    </div>
+                    <button onclick="addItemToCart('${item.id}')" class="bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300">
+                        Add to Order
+                    </button>
+                </div>
+            `;
+            itemModal.classList.remove('hidden');
+        }
+
+        function closeItemModal() {
+            itemModal.classList.add('hidden');
+        }
+
+        // --- Cart Modal & Logic ---
+        function showCartModal() {
+            updateCartUI();
+            cartModal.classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            cartModal.classList.add('hidden');
+        }
+
+        function addItemToCart(itemId) {
+            const quantityInput = document.getElementById('item-quantity');
+            const quantity = parseInt(quantityInput.value);
+            const item = menuData.find(i => i.id === itemId);
+
+            if (!item || quantity <= 0) return;
+
+            // Check if item is already in cart
+            const existingItem = cart.find(cartItem => cartItem.id === itemId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ ...item, quantity: quantity });
+            }
+
+            updateCartUI();
+            closeItemModal();
+            // Show a quick confirmation
+            showCartModal();
+            setTimeout(closeCartModal, 1500); // Show cart for 1.5s
+        }
+        
+        function updateCartQuantity(itemId, change) {
+            const cartItem = cart.find(item => item.id === itemId);
+            if (!cartItem) return;
+
+            cartItem.quantity += change;
+
+            if (cartItem.quantity <= 0) {
+                // Remove item from cart
+                cart = cart.filter(item => item.id !== itemId);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let total = 0;
+            let totalItems = 0;
+            
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = `<p class="text-brand-light text-center">Your cart is empty.</p>`;
+                confirmOrderBtn.disabled = true;
+            } else {
+                cartItemsList.innerHTML = ''; // Clear list
+                // Updated cart item styles
+                cart.forEach(item => {
+                    total += item.price * item.quantity;
+                    totalItems += item.quantity;
+                    cartItemsList.innerHTML += `
+                        <div class="flex items-center space-x-4">
+                            <img src="${item.image}" alt="${item.name}" class="h-16 w-16 rounded-lg object-cover" onerror="this.src='https://placehold.co/64x64/F97316/FFFFFF?text=Item'; this.onerror=null;">
+                            <div class="flex-grow">
+                                <h4 class="text-lg font-semibold text-brand-dark">${item.name}</h4>
+                                <!-- JMD FORMAT: Render formatted price -->
+                                <p class="text-brand-primary font-medium">${formatJMD(item.price)}</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="updateCartQuantity('${item.id}', -1)" class="bg-brand-bg h-7 w-7 rounded-full text-brand-light hover:text-brand-dark">-</button>
+                                <span class="text-lg font-medium text-brand-dark">${item.quantity}</span>
+                                <button onclick="updateCartQuantity('${item.id}', 1)" class="bg-brand-bg h-7 w-7 rounded-full text-brand-light hover:text-brand-dark">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                confirmOrderBtn.disabled = false;
+            }
+
+            // Update totals
+            // JMD FORMAT: Use formatter for total
+            cartTotalEl.textContent = formatJMD(total);
+            cartCountDesktop.textContent = totalItems;
+            cartCountMobile.textContent = totalItems;
+            
+            // Show/hide badge
+            [cartCountDesktop, cartCountMobile].forEach(el => {
+                el.classList.toggle('hidden', totalItems === 0);
+            });
+        }
+        
+        function confirmOrder() {
+            if (cart.length === 0) return;
+
+            // --- New Smarter Prep Time Logic ---
+            let total = 0;
+            let mealTime = 0;
+            let snackTime = 0;
+
+            const mealItems = cart.filter(item => item.prepTime >= 10);
+            const snackItems = cart.filter(item => item.prepTime < 10);
+
+            // 1. Calculate Meal Time
+            if (mealItems.length > 0) {
+                const longestMealPrep = Math.max(...mealItems.map(item => item.prepTime));
+                const uniqueMealIds = new Set(mealItems.map(item => item.id));
+
+                if (uniqueMealIds.size === 1) {
+                    // All meals are the same (e.g., 3x Jerk Chicken)
+                    // Add 3 mins for each additional item
+                    mealTime = longestMealPrep + (mealItems.length - 1) * 3; 
+                } else {
+                    // Different meals (e.g., 1x Jerk, 1x Stew)
+                    // Add 5 mins for each additional unique meal
+                    mealTime = longestMealPrep + (uniqueMealIds.size - 1) * 5;
+                }
+            }
+
+            // 2. Calculate Snack Time
+            if (snackItems.length > 0) {
+                const longestSnackPrep = Math.max(...snackItems.map(item => item.prepTime));
+                snackTime = longestSnackPrep;
+                
+                // Add 1 min if more than 3 snack/drink items
+                if (snackItems.length > 3) {
+                    snackTime += 1;
+                }
+            }
+
+            // 3. Final Time is the MAX of the two (prep happens in parallel)
+            // If cart is only snacks, mealTime is 0, so snackTime is used.
+            // If cart has meals, mealTime is used (unless snack time is somehow longer)
+            const maxPrepTimeMinutes = Math.max(mealTime, snackTime);
+            // --- End of New Logic ---
+
+            const orderId = `order-${Math.floor(Math.random() * 90000) + 10000}`;
+            const totalPrepTimeMillis = maxPrepTimeMinutes * 60 * 1000; // Convert minutes to ms
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+            });
+
+            const newOrder = {
+                id: orderId,
+                itemsSummary: cart.map(item => `${item.quantity}x ${item.name}`).join(', '),
+                totalPrice: total,
+                startTime: Date.now(),
+                totalPrepTime: totalPrepTimeMillis,
+                notified: false // Flag to prevent multiple notifications
+            };
+            
+            // --- UPDATED: Add new orders to the TOP of the list ---
+            activeOrders.unshift(newOrder);
+            
+            // Update success modal text
+            successMessageText.innerHTML = `Your order (${orderId.replace('order-','Order #')}) is confirmed.<br>It will be ready for pickup in <strong>${maxPrepTimeMinutes} minutes</strong>.`;
+            
+            cart = []; // Clear the cart
+            updateCartUI();
+            closeCartModal();
+            successModal.classList.remove('hidden');
+            
+            // Start the order update interval if it's not already running
+            if (!orderUpdateInterval) {
+                orderUpdateInterval = setInterval(updateOrderProgress, 1000); // Check every second
+            }
+        }
+        
+        function closeSuccessModal() {
+            successModal.classList.add('hidden');
+            showPage('page-orders'); // Go to orders page after confirmation
+        }
+
+        // --- New Order Tracking Functions ---
+        
+        /**
+         * Renders both the active and historical order lists.
+         * Called when the 'page-orders' is shown or an order completes.
+         */
+        function renderOrders() {
+            const now = Date.now();
+            
+            // Render Active Orders
+            activeOrdersList.innerHTML = '';
+            if (activeOrders.length === 0) {
+                noActiveOrders.classList.remove('hidden');
+            } else {
+                noActiveOrders.classList.add('hidden');
+                // --- NOTE: No sort needed here. We now unshift() new orders. ---
+                activeOrders.forEach(order => {
+                    const elapsed = now - order.startTime;
+                    const progress = Math.min(100, (elapsed / order.totalPrepTime) * 100);
+                    const remainingMinutes = Math.max(0, Math.ceil((order.totalPrepTime - elapsed) / 60000));
+                    
+                    activeOrdersList.innerHTML += `
+                        <div class="bg-brand-surface rounded-lg shadow-lg p-5">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-lg font-semibold text-brand-dark">${order.id.replace('order-', 'Order #')}</span>
+                                <!-- JMD FORMAT: Use formatter for total -->
+                                <span class="text-lg font-bold text-brand-primary">${formatJMD(order.totalPrice)}</span>
+                            </div>
+                            <p class="text-brand-light mb-3">${order.itemsSummary}</p>
+                            <div class="w-full bg-brand-bg rounded-full h-2.5">
+                                <div id="progress-${order.id}" class="bg-brand-primary h-2.5 rounded-full transition-all duration-1000 ease-linear" style="width: ${progress}%"></div>
+                            </div>
+                            <p id="status-${order.id}" class="text-brand-primary text-sm mt-2">Status: Preparing (Ready in ${remainingMinutes} mins)</p>
+                        </div>
+                    `;
+                });
+            }
+
+            // Render Order History
+            orderHistoryList.innerHTML = '';
+            if (orderHistory.length === 0) {
+                noOrderHistory.classList.remove('hidden');
+            } else {
+                noOrderHistory.classList.add('hidden');
+                // Sort by most recent first
+                orderHistory.sort((a, b) => b.completedAtTime - a.completedAtTime);
+                
+                orderHistory.forEach(order => {
+                    orderHistoryList.innerHTML += `
+                        <div class="bg-brand-surface rounded-lg shadow-lg p-5 opacity-70">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-lg font-semibold text-brand-dark">${order.id.replace('order-', 'Order #')}</span>
+                                <!-- JMD FORMAT: Use formatter for total -->
+                                <span class="text-lg font-bold text-brand-light">${formatJMD(order.totalPrice)}</span>
+                            </div>
+                            <p class="text-brand-light mb-1">${order.itemsSummary}</p>
+                            <p class="text-brand-light text-sm">Status: ${order.status} (${order.completedAtDate})</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        /**
+         * Runs every second to update progress bars and move completed orders.
+         */
+        function updateOrderProgress() {
+            const now = Date.now();
+            let hasActiveOrders = false;
+            let anOrderCompleted = false;
+
+            const remainingActive = [];
+
+            activeOrders.forEach(order => {
+                const elapsed = now - order.startTime;
+                let progress = (elapsed / order.totalPrepTime) * 100;
+
+                if (progress < 100) {
+                    hasActiveOrders = true;
+                    remainingActive.push(order);
+                    
+                    // Update UI only if the user is on the orders page
+                    const progressBar = document.getElementById(`progress-${order.id}`);
+                    const statusText = document.getElementById(`status-${order.id}`);
+                    
+                    if (progressBar && statusText) {
+                        const remainingMinutes = Math.max(0, Math.ceil((order.totalPrepTime - elapsed) / 60000));
+                        progressBar.style.width = `${progress}%`;
+                        statusText.textContent = `Status: Preparing (Ready in ${remainingMinutes} mins)`;
+                    }
+                } else {
+                    // Order is complete
+                    anOrderCompleted = true;
+                    order.status = 'Ready for Pickup';
+                    order.completedAtTime = now;
+                    order.completedAtDate = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    orderHistory.push(order);
+                    
+                    // --- NEW: Trigger Notification ---
+                    // Check if we already notified for this order
+                    if (!order.notified) {
+                         showOrderReadyToast(order);
+                         order.notified = true; // Mark as notified
+                    }
+                    // --- END NEW ---
+                }
+            });
+
+            activeOrders = remainingActive;
+
+            // If an order just completed, re-render the lists
+            if (anOrderCompleted && document.getElementById('page-orders').classList.contains('hidden') === false) {
+                renderOrders();
+            }
+            
+            // If no more active orders, stop the interval timer
+            if (!hasActiveOrders && orderUpdateInterval) {
+                clearInterval(orderUpdateInterval);
+                orderUpdateInterval = null;
+            }
+        }
+
+
+        // --- New Profile & Preference Functions ---
+
+        /**
+         * Renders the user's saved preferences on the profile page.
+         */
+        function renderProfilePreferences() {
+            preferenceList.innerHTML = ''; // Clear existing
+            if (userPreferences.length === 0) {
+                preferenceList.innerHTML = `<p class="text-brand-light italic">No preferences added.</p>`;
+            } else {
+                userPreferences.forEach(pref => {
+                    preferenceList.innerHTML += `
+                        <span class="bg-brand-primary text-white text-sm font-medium py-1 px-3 rounded-full">
+                            ${pref.name}
+                        </span>
+                    `;
+                });
+            }
+        }
+
+        /**
+         * Shows the modal to add/remove preferences.
+         */
+        function showPreferenceModal() {
+            preferenceOptionsList.innerHTML = ''; // Clear
+            
+            allPreferences.forEach(pref => {
+                const isSelected = userPreferences.some(userPref => userPref.tag === pref.tag);
+                
+                // Set button style based on whether it's selected
+                const btnClass = isSelected
+                    ? 'bg-brand-primary text-white' // Selected style
+                    : 'bg-brand-bg text-brand-light hover:text-brand-dark'; // Default style
+
+                preferenceOptionsList.innerHTML += `
+                    <button 
+                        onclick="togglePreference('${pref.tag}', '${pref.name}', this)"
+                        class="${btnClass} w-full text-left font-medium py-3 px-5 rounded-lg transition duration-300"
+                    >
+                        ${pref.name}
+                    </button>
+                `;
+            });
+            
+            preferenceModal.classList.remove('hidden');
+        }
+
+        /**
+         * Closes the preference modal and re-renders the profile list.
+         */
+        function closePreferenceModal() {
+            preferenceModal.classList.add('hidden');
+            renderProfilePreferences(); // Update the profile page
+        }
+
+        /**
+         * Toggles a preference on or off from the modal.
+         */
+        function togglePreference(tag, name, btnElement) {
+            const index = userPreferences.findIndex(pref => pref.tag === tag);
+            
+            if (index > -1) {
+                // It exists, so remove it
+                userPreferences.splice(index, 1);
+                // Update button style
+                btnElement.classList.remove('bg-brand-primary', 'text-white');
+                btnElement.classList.add('bg-brand-bg', 'text-brand-light', 'hover:text-brand-dark');
+            } else {
+                // It doesn't exist, so add it
+                userPreferences.push({ tag: tag, name: name });
+                // Update button style
+                btnElement.classList.add('bg-brand-primary', 'text-white');
+                btnElement.classList.remove('bg-brand-bg', 'text-brand-light', 'hover:text-brand-dark');
+            }
+        }
+
+
+        // --- New Notification Functions ---
+        
+        let audioCtx = null; // Re-usable audio context
+        let toastTimeout = null; // To auto-hide toast
+
+        /**
+         * Plays a simple "ding" sound.
+         */
+        function playNotificationSound() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note (a nice 'ding')
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); // Keep volume reasonable
+
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5); // Fade out over 0.5s
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5); // Play for 0.5s
+            } catch (e) {
+                console.error("Audio playback error. User may need to interact with the page first.", e);
+            }
+        }
+        
+        /**
+         * Updates the red notification badges on the bell icons.
+         */
+        function updateNotificationBadge() {
+            [notifCountDesktop, notifCountMobile].forEach(el => {
+                if (newNotificationCount > 0) {
+                    el.textContent = newNotificationCount;
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        /**
+         * Resets the notification count and hides the badges.
+         */
+        function clearNotifications() {
+            newNotificationCount = 0;
+            updateNotificationBadge();
+        }
+
+        /**
+         * Shows the notification toast, increments badge, and plays sound.
+         */
+        function showOrderReadyToast(order) {
+            // Update toast text
+            orderReadyToastText.textContent = `Order #${order.id.split('-')[1]} is now ready for pickup!`;
+            
+            // Increment badge count
+            newNotificationCount++;
+            updateNotificationBadge();
+
+            // Play sound
+            playNotificationSound();
+
+            // Clear any existing hide timeout
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+            }
+
+            // Show toast (animation)
+            orderReadyToast.classList.remove('hidden', 'opacity-0', 'translate-x-[200%]');
+            orderReadyToast.classList.add('opacity-100', 'translate-x-0');
+
+            // Set a timeout to auto-hide the toast after 6 seconds
+            toastTimeout = setTimeout(() => {
+                closeOrderReadyToast();
+            }, 6000);
+        }
+
+        /**
+         * Hides the notification toast.
+         */
+        function closeOrderReadyToast() {
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+            
+            // Animate out
+            orderReadyToast.classList.remove('opacity-100', 'translate-x-0');
+            orderReadyToast.classList.add('opacity-0', 'translate-x-[200%]');
+
+            // Add 'hidden' back after the transition finishes (500ms)
+            setTimeout(() => {
+                orderReadyToast.classList.add('hidden');
+            }, 500); // Must match transition duration
+        }
+
+
+    </script>
+
+</body>
+</html>
