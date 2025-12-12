@@ -44,7 +44,7 @@
       ::-webkit-scrollbar-track {
         background: #F1F5F9; /* brand-bg */
       }
-      ::-webkit-scrollbar-thumb {
+      ::webkit-scrollbar-thumb {
         background: #F97316; /* brand-primary */
         border-radius: 4px;
       }
@@ -63,6 +63,135 @@
       
       :-moz-full-screen {
         background-color: #f1f5f9;
+      }
+      
+      /* Video player styling */
+      .video-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      
+      .video-container {
+        position: relative;
+        width: 90%;
+        max-width: 800px;
+        background: #1f2937;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      
+      .video-player {
+        width: 100%;
+        height: auto;
+        display: block;
+        cursor: pointer;
+      }
+      
+      .video-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 20px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      
+      .video-container:hover .video-controls {
+        opacity: 1;
+      }
+      
+      .play-pause-btn {
+        background: rgba(249, 115, 22, 0.9);
+        border: none;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s;
+      }
+      
+      .play-pause-btn:hover {
+        background: rgba(249, 115, 22, 1);
+        transform: scale(1.05);
+      }
+      
+      .close-video-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        font-size: 20px;
+        transition: all 0.2s;
+        z-index: 10;
+      }
+      
+      .close-video-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+      
+      .video-loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.8);
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
+      }
+      
+      /* Watch Commercial button styling */
+      .watch-commercial-btn {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+      }
+      
+      .watch-commercial-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+      }
+      
+      .watch-commercial-btn:active {
+        transform: translateY(0);
       }
     </style>
 </head>
@@ -96,6 +225,15 @@
                         <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-orders', this)">My Orders</a>
                         <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-profile', this)">Profile</a>
                         
+                        <!-- Watch Commercial Button (Desktop) - NEW -->
+                        <button onclick="showVideoCommercial()" class="watch-commercial-btn">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                            </svg>
+                            Watch Commercial
+                        </button>
+                        
                         <!-- Fullscreen Toggle Button (Desktop) - NEW -->
                         <button id="fullscreen-btn" onclick="toggleFullscreen()" class="text-brand-light hover:text-brand-primary transition duration-300" aria-label="Toggle Fullscreen">
                             <svg id="fullscreen-enter" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -125,6 +263,14 @@
 
                     <!-- Mobile Burger Button -->
                     <div class="md:hidden flex items-center">
+                        <!-- Watch Commercial Button (Mobile) - NEW -->
+                        <button onclick="showVideoCommercial()" class="text-brand-light hover:text-brand-primary transition duration-300 mr-4" aria-label="Watch Commercial">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                            </svg>
+                        </button>
+                        
                         <!-- Fullscreen Toggle Button (Mobile) - NEW -->
                         <button id="fullscreen-btn-mobile" onclick="toggleFullscreen()" class="text-brand-light hover:text-brand-primary transition duration-300 mr-4" aria-label="Toggle Fullscreen">
                             <svg id="fullscreen-enter-mobile" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -168,6 +314,14 @@
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-menu', this)">Menu</a>
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-orders', this)">My Orders</a>
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-profile', this)">Profile</a>
+                <!-- Watch Commercial Option (Mobile Menu) - NEW -->
+                <button onclick="showVideoCommercial()" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300 w-full text-left flex items-center gap-3">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                    </svg>
+                    Watch Commercial
+                </button>
                 <!-- Fullscreen Option (Mobile Menu) - NEW -->
                 <button onclick="toggleFullscreen()" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300 w-full text-left">
                     Fullscreen Mode
@@ -186,9 +340,19 @@
                         <h1 class="text-4xl md:text-6xl font-extrabold text-brand-dark mb-4 leading-tight">Skip the line.</h1>
                         <h2 class="text-3xl md:text-5xl font-bold text-brand-primary mb-6">Order ahead.</h2>
                         <p class="text-brand-light text-lg mb-8 max-w-lg">Welcome to Quick Bite, your smart solution to cafeteria queues. Browse the menu, place your order, and get notified when it's ready for pickup.</p>
-                        <button onclick="showPage('page-menu')" class="bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300 transform hover:scale-105">
-                            View Today's Menu
-                        </button>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="showPage('page-menu')" class="bg-brand-primary text-white text-lg font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-brand-secondary transition duration-300 transform hover:scale-105">
+                                View Today's Menu
+                            </button>
+                            <!-- Watch Commercial Button on Home Page - NEW -->
+                            <button onclick="showVideoCommercial()" class="watch-commercial-btn">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                                </svg>
+                                Watch Commercial
+                            </button>
+                        </div>
                     </div>
                     <div class="md:w-1/2 flex justify-center">
                          <img src="https://placehold.co/500x500/F97316/FFFFFF?text=Quick+Bite" alt="App preview" class="rounded-lg shadow-xl"
@@ -205,7 +369,17 @@
 
             <!-- === Page 2: Menu === -->
             <section id="page-menu" class="page-section hidden">
-                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">Today's Menu</h1>
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-extrabold text-brand-dark">Today's Menu</h1>
+                    <!-- Watch Commercial Button on Menu Page - NEW -->
+                    <button onclick="showVideoCommercial()" class="watch-commercial-btn">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                        </svg>
+                        Watch Commercial
+                    </button>
+                </div>
                 
                 <!-- Category Filters - Updated colors -->
                 <div class="flex flex-wrap gap-3 mb-8">
@@ -223,7 +397,17 @@
 
             <!-- === Page 3: My Orders === -->
             <section id="page-orders" class="page-section hidden">
-                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">My Orders</h1>
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-extrabold text-brand-dark">My Orders</h1>
+                    <!-- Watch Commercial Button on Orders Page - NEW -->
+                    <button onclick="showVideoCommercial()" class="watch-commercial-btn">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                        </svg>
+                        Watch Commercial
+                    </button>
+                </div>
                 
                 <!-- Active Orders - Updated colors -->
                 <h2 class="text-2xl font-bold text-brand-primary mb-4">In Progress</h2>
@@ -242,7 +426,17 @@
 
             <!-- === Page 4: Profile === -->
             <section id="page-profile" class="page-section hidden">
-                <h1 class="text-4xl font-extrabold text-brand-dark mb-8">My Profile</h1>
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-extrabold text-brand-dark">My Profile</h1>
+                    <!-- Watch Commercial Button on Profile Page - NEW -->
+                    <button onclick="showVideoCommercial()" class="watch-commercial-btn">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+                        </svg>
+                        Watch Commercial
+                    </button>
+                </div>
                 <!-- Updated colors and placeholder -->
                 <div class="bg-brand-surface rounded-lg shadow-2xl p-8 max-w-2xl mx-auto">
                     <div class="flex items-center space-x-6 mb-8">
@@ -294,6 +488,41 @@
 
     </div>
     <!-- End of #app wrapper -->
+
+
+    <!-- ===== Video Commercial Modal ===== -->
+    <div id="video-commercial-modal" class="video-overlay hidden" onclick="handleVideoOverlayClick(event)">
+        <div class="video-container" onclick="event.stopPropagation()">
+            <button class="close-video-btn" onclick="closeVideoCommercial()" aria-label="Close Video">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <video id="commercial-video" class="video-player" preload="auto" playsinline>
+                <source src="https://github.com/Cleo876/Quick-Bites/raw/refs/heads/main/App_Commercial_Generation.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            
+            <div class="video-controls">
+                <button id="play-pause-btn" class="play-pause-btn" onclick="toggleVideoPlayback(event)" aria-label="Play/Pause">
+                    <svg id="play-icon" class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                    </svg>
+                    <svg id="pause-icon" class="h-8 w-8 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="video-loading" class="video-loading hidden">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+                    <p>Loading commercial...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- ===== Notification Toast ===== -->
@@ -421,6 +650,12 @@
         function formatJMD(price) {
             return '$' + price.toLocaleString('en-US') + ' JMD';
         }
+
+        // --- Video Commercial Variables ---
+        let videoElement = null;
+        let isVideoPlaying = false;
+        let isVideoLoaded = false;
+        let videoPreloadStarted = false;
 
         // --- Mock Data (Based on the document) ---
         // PRICES UPDATED: Reduced by 100-300 JMD as requested
@@ -597,6 +832,15 @@
         const popularGrid = document.getElementById('popular-items-grid');
         const filterBtns = document.querySelectorAll('.menu-filter-btn');
         
+        // Video elements
+        const videoCommercialModal = document.getElementById('video-commercial-modal');
+        const commercialVideo = document.getElementById('commercial-video');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const videoLoading = document.getElementById('video-loading');
+        const closeVideoBtn = document.querySelector('.close-video-btn');
+        
         // Fullscreen buttons - NEW
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         const fullscreenBtnMobile = document.getElementById('fullscreen-btn-mobile');
@@ -645,6 +889,7 @@
             updateNotificationBadge(); // Init notification badge
             renderProfilePreferences(); // Init profile preferences
             setupFullscreenListeners(); // Setup fullscreen event listeners
+            preloadVideo(); // Start downloading video immediately
         });
 
         // Burger menu toggle
@@ -653,6 +898,176 @@
             burgerOpen.classList.toggle('hidden');
             burgerClose.classList.toggle('hidden');
         });
+
+        // --- Video Commercial Functions ---
+        function preloadVideo() {
+            if (videoPreloadStarted) return;
+            videoPreloadStarted = true;
+            
+            // Create a hidden video element to preload the video
+            const preloadVideo = document.createElement('video');
+            preloadVideo.preload = 'auto';
+            preloadVideo.style.display = 'none';
+            preloadVideo.src = 'https://github.com/Cleo876/Quick-Bites/raw/refs/heads/main/App_Commercial_Generation.mp4';
+            
+            // Listen for when enough data is loaded
+            preloadVideo.addEventListener('loadeddata', () => {
+                console.log('Video preloaded successfully');
+                isVideoLoaded = true;
+                // Remove the hidden preload element
+                preloadVideo.remove();
+            });
+            
+            preloadVideo.addEventListener('error', (e) => {
+                console.error('Error preloading video:', e);
+                // Still try to load when modal opens
+            });
+            
+            // Add to DOM to start loading
+            document.body.appendChild(preloadVideo);
+        }
+
+        function showVideoCommercial() {
+            videoCommercialModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            
+            // Show loading indicator
+            videoLoading.classList.remove('hidden');
+            
+            // Reset video state
+            if (commercialVideo) {
+                commercialVideo.currentTime = 0;
+                
+                // Set up video event listeners if not already done
+                if (!videoElement) {
+                    videoElement = commercialVideo;
+                    setupVideoListeners();
+                }
+                
+                // Check if video is already loaded
+                if (commercialVideo.readyState >= 3) { // HAVE_FUTURE_DATA or more
+                    videoLoading.classList.add('hidden');
+                    startVideoPlayback();
+                } else {
+                    // Wait for video to load
+                    const onLoaded = () => {
+                        videoLoading.classList.add('hidden');
+                        startVideoPlayback();
+                        commercialVideo.removeEventListener('loadeddata', onLoaded);
+                    };
+                    commercialVideo.addEventListener('loadeddata', onLoaded);
+                    
+                    // Fallback in case video takes too long
+                    setTimeout(() => {
+                        videoLoading.classList.add('hidden');
+                        startVideoPlayback();
+                    }, 5000);
+                }
+            }
+        }
+
+        function closeVideoCommercial() {
+            videoCommercialModal.classList.add('hidden');
+            document.body.style.overflow = ''; // Re-enable scrolling
+            
+            // Pause video
+            if (commercialVideo && !commercialVideo.paused) {
+                commercialVideo.pause();
+                isVideoPlaying = false;
+                updatePlayPauseButton();
+            }
+            
+            // Reset video to beginning
+            if (commercialVideo) {
+                commercialVideo.currentTime = 0;
+            }
+        }
+
+        function setupVideoListeners() {
+            if (!videoElement) return;
+            
+            // Update play/pause button when video plays/pauses
+            videoElement.addEventListener('play', () => {
+                isVideoPlaying = true;
+                updatePlayPauseButton();
+            });
+            
+            videoElement.addEventListener('pause', () => {
+                isVideoPlaying = false;
+                updatePlayPauseButton();
+            });
+            
+            // Hide loading when video can play
+            videoElement.addEventListener('canplay', () => {
+                videoLoading.classList.add('hidden');
+                isVideoLoaded = true;
+            });
+            
+            // Handle video end
+            videoElement.addEventListener('ended', () => {
+                isVideoPlaying = false;
+                updatePlayPauseButton();
+                // Optional: Auto-close after video ends
+                // setTimeout(closeVideoCommercial, 2000);
+            });
+            
+            // Click on video toggles play/pause (but not on controls)
+            videoElement.addEventListener('click', (e) => {
+                // Only toggle if click is not on the play/pause button
+                if (!playPauseBtn.contains(e.target)) {
+                    toggleVideoPlayback(e);
+                }
+            });
+        }
+
+        function handleVideoOverlayClick(event) {
+            // Close video if clicking on overlay (outside video container)
+            if (!event.target.closest('.video-container')) {
+                closeVideoCommercial();
+            }
+        }
+
+        function toggleVideoPlayback(event) {
+            event.stopPropagation(); // Prevent closing modal
+            
+            if (!videoElement) return;
+            
+            if (videoElement.paused) {
+                startVideoPlayback();
+            } else {
+                videoElement.pause();
+                isVideoPlaying = false;
+                updatePlayPauseButton();
+            }
+        }
+
+        function startVideoPlayback() {
+            if (!videoElement) return;
+            
+            const playPromise = videoElement.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isVideoPlaying = true;
+                    updatePlayPauseButton();
+                }).catch(error => {
+                    console.error('Video playback failed:', error);
+                    // Show play button if autoplay fails
+                    isVideoPlaying = false;
+                    updatePlayPauseButton();
+                });
+            }
+        }
+
+        function updatePlayPauseButton() {
+            if (isVideoPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
 
         // --- Fullscreen Functions - NEW ---
         function setupFullscreenListeners() {
