@@ -51,6 +51,19 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #EA580C; /* brand-secondary */
       }
+      
+      /* Fullscreen mode styling */
+      :fullscreen {
+        background-color: #f1f5f9;
+      }
+      
+      :-webkit-full-screen {
+        background-color: #f1f5f9;
+      }
+      
+      :-moz-full-screen {
+        background-color: #f1f5f9;
+      }
     </style>
 </head>
 
@@ -83,6 +96,16 @@
                         <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-orders', this)">My Orders</a>
                         <a href="#" class="nav-link text-brand-light hover:text-brand-primary transition duration-300 font-medium" onclick="showPage('page-profile', this)">Profile</a>
                         
+                        <!-- Fullscreen Toggle Button (Desktop) - NEW -->
+                        <button id="fullscreen-btn" onclick="toggleFullscreen()" class="text-brand-light hover:text-brand-primary transition duration-300" aria-label="Toggle Fullscreen">
+                            <svg id="fullscreen-enter" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                            </svg>
+                            <svg id="fullscreen-exit" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25" />
+                            </svg>
+                        </button>
+
                         <!-- Notification Bell (Desktop) -->
                         <a href="#" class="nav-link relative text-brand-light hover:text-brand-primary transition duration-300" onclick="showPage('page-orders', this); clearNotifications();" aria-label="View Notifications">
                             <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -102,6 +125,16 @@
 
                     <!-- Mobile Burger Button -->
                     <div class="md:hidden flex items-center">
+                        <!-- Fullscreen Toggle Button (Mobile) - NEW -->
+                        <button id="fullscreen-btn-mobile" onclick="toggleFullscreen()" class="text-brand-light hover:text-brand-primary transition duration-300 mr-4" aria-label="Toggle Fullscreen">
+                            <svg id="fullscreen-enter-mobile" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                            </svg>
+                            <svg id="fullscreen-exit-mobile" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25" />
+                            </svg>
+                        </button>
+
                         <!-- Notification Bell (Mobile) -->
                          <a href="#" class="nav-link relative text-brand-light hover:text-brand-primary transition duration-300 mr-4" onclick="showPage('page-orders', this); clearNotifications();" aria-label="View Notifications">
                             <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -135,6 +168,10 @@
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-menu', this)">Menu</a>
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-orders', this)">My Orders</a>
                 <a href="#" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300" onclick="showPage('page-profile', this)">Profile</a>
+                <!-- Fullscreen Option (Mobile Menu) - NEW -->
+                <button onclick="toggleFullscreen()" class="nav-link block text-brand-light hover:text-brand-primary text-lg font-medium px-5 py-4 transition duration-300 w-full text-left">
+                    Fullscreen Mode
+                </button>
             </div>
         </header>
 
@@ -530,6 +567,7 @@
         let orderHistory = [];
         let orderUpdateInterval = null;
         let newNotificationCount = 0;
+        let isFullscreen = false;
         
         // --- New Profile State ---
         // { tag: 'internal-tag', name: 'Display Name' }
@@ -558,6 +596,14 @@
         const menuGrid = document.getElementById('menu-grid');
         const popularGrid = document.getElementById('popular-items-grid');
         const filterBtns = document.querySelectorAll('.menu-filter-btn');
+        
+        // Fullscreen buttons - NEW
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const fullscreenBtnMobile = document.getElementById('fullscreen-btn-mobile');
+        const fullscreenEnter = document.getElementById('fullscreen-enter');
+        const fullscreenExit = document.getElementById('fullscreen-exit');
+        const fullscreenEnterMobile = document.getElementById('fullscreen-enter-mobile');
+        const fullscreenExitMobile = document.getElementById('fullscreen-exit-mobile');
         
         // Modals
         const itemModal = document.getElementById('item-modal');
@@ -598,6 +644,7 @@
             updateCartUI();
             updateNotificationBadge(); // Init notification badge
             renderProfilePreferences(); // Init profile preferences
+            setupFullscreenListeners(); // Setup fullscreen event listeners
         });
 
         // Burger menu toggle
@@ -606,6 +653,69 @@
             burgerOpen.classList.toggle('hidden');
             burgerClose.classList.toggle('hidden');
         });
+
+        // --- Fullscreen Functions - NEW ---
+        function setupFullscreenListeners() {
+            // Listen for fullscreen change events
+            document.addEventListener('fullscreenchange', updateFullscreenButtons);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenButtons);
+            document.addEventListener('mozfullscreenchange', updateFullscreenButtons);
+            document.addEventListener('MSFullscreenChange', updateFullscreenButtons);
+        }
+
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        }
+
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            }
+        }
+
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            }
+        }
+
+        function updateFullscreenButtons() {
+            isFullscreen = !!(document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement);
+            
+            // Update desktop button
+            if (isFullscreen) {
+                fullscreenEnter.classList.add('hidden');
+                fullscreenExit.classList.remove('hidden');
+                fullscreenEnterMobile.classList.add('hidden');
+                fullscreenExitMobile.classList.remove('hidden');
+            } else {
+                fullscreenEnter.classList.remove('hidden');
+                fullscreenExit.classList.add('hidden');
+                fullscreenEnterMobile.classList.remove('hidden');
+                fullscreenExitMobile.classList.add('hidden');
+            }
+        }
 
         // --- Page Navigation ---
         function showPage(pageId, clickedLink = null) {
@@ -770,6 +880,11 @@
         function showCartModal() {
             updateCartUI();
             cartModal.classList.remove('hidden');
+            // Add a subtle animation to draw attention to the cart
+            cartModal.classList.add('animate-pulse-once');
+            setTimeout(() => {
+                cartModal.classList.remove('animate-pulse-once');
+            }, 1000);
         }
 
         function closeCartModal() {
@@ -793,9 +908,9 @@
 
             updateCartUI();
             closeItemModal();
-            // Show a quick confirmation
+            // FIXED: Keep cart modal open instead of auto-closing
+            // Show cart modal with the new item added
             showCartModal();
-            setTimeout(closeCartModal, 1500); // Show cart for 1.5s
         }
         
         function updateCartQuantity(itemId, change) {
@@ -1238,6 +1353,19 @@
             }, 500); // Must match transition duration
         }
 
+        // Add CSS animation for cart pulse effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse-once {
+                0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+                70% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+            }
+            .animate-pulse-once {
+                animation: pulse-once 1s;
+            }
+        `;
+        document.head.appendChild(style);
 
     </script>
 
