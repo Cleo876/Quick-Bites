@@ -423,14 +423,14 @@
         }
 
         // --- Mock Data (Based on the document) ---
-        // Prices updated to JMD format (e.g., 1250 instead of 12.50)
-        // Prep times updated for snacks
+        // PRICES UPDATED: Reduced by 100-300 JMD as requested
+        // Big meals reduced by 300, snacks/drinks reduced by 100-200
         const menuData = [
             {
                 id: 'm1',
                 name: 'Jerk Chicken',
                 category: 'meal',
-                price: 1250,
+                price: 950, // Reduced from 1250 (300 reduction)
                 description: 'Spicy, smoky, and authentic. Served with rice & peas and a side of vegetables.',
                 image: 'https://i0.wp.com/louskitchencorner.freybors.com/wp-content/uploads/2023/07/firey-jerk-chicken-with-rice-and-peas.png?resize=856%2C685&ssl=1',
                 nutrition: { calories: 550, allergens: 'Soy, Gluten' },
@@ -441,7 +441,7 @@
                 id: 'm2',
                 name: 'Ackee & Saltfish',
                 category: 'meal',
-                price: 1000,
+                price: 800, // Reduced from 1000 (200 reduction)
                 description: "Jamaica's national dish. Served with fried dumplings and breadfruit.",
                 image: 'https://cdn.tasteatlas.com/Images/Dishes/6a1475df2bbf470282966de5df604f2a.jpg?m=facebook',
                 nutrition: { calories: 480, allergens: 'Fish, Gluten' },
@@ -452,7 +452,7 @@
                 id: 'm3',
                 name: 'Stew Beef Lunch',
                 category: 'meal',
-                price: 1100,
+                price: 900, // Reduced from 1100 (200 reduction)
                 description: 'Rich beef stew, slow-cooked and served with rice and peas.',
                 image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzisEtLdUDZyhMSOjAHLPQth1xfIvpYogyP7BNQwBadw41s9o4jFI34V6jJc_6sJTyfyA&usqp=CAU',
                 nutrition: { calories: 600, allergens: 'Gluten' },
@@ -463,7 +463,7 @@
                 id: 'm4',
                 name: 'Beef Patty',
                 category: 'snack',
-                price: 300,
+                price: 200, // Reduced from 300 (100 reduction)
                 description: 'Add-ons available: Cheese, Callaloo, Mega size',
                 image: 'https://cabbieja.com/cdn/shop/products/pattyanccocobread2_6366ebdb-ef21-4ee1-a85b-12fcbdf65f41_530x@2x.jpg?v=1622084505',
                 nutrition: { calories: 300, allergens: 'Gluten, Soy' },
@@ -474,7 +474,7 @@
                 id: 'm5',
                 name: 'Egg, Bacon & Cheese Patty',
                 category: 'snack',
-                price: 450,
+                price: 350, // Reduced from 450 (100 reduction)
                 description: 'A Juici™ patty stuffed with egg, bacon, and cheese.',
                 image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6nnvc3VVRGvsewPuCnx4J5gWZRiDr20CL5Q&s',
                 nutrition: { calories: 450, allergens: 'Gluten, Dairy, Egg' },
@@ -485,7 +485,7 @@
                 id: 'm6',
                 name: 'Bottled Water',
                 category: 'drink',
-                price: 200,
+                price: 150, // As specified in request
                 description: 'Crisp, refreshing spring water.',
                 image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7ss4XS7wIjXN-UzmHg9RlvwEOwdNNRPu9jw&s',
                 nutrition: { calories: 0, allergens: 'None' },
@@ -494,11 +494,11 @@
             },
             {
                 id: 'm7',
-                name: 'Juciful Orange Juice', // Changed from 'Local Fruit Juice'
+                name: 'Juciful Orange Juice',
                 category: 'drink',
-                price: 350,
-                description: 'Classic Juciful orange juice.', // Changed
-                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCQOdAWVTNX3n3_UD49KjLSpm7s6VRlWBs_g&s', // Changed
+                price: 250, // Reduced from 350 (100 reduction)
+                description: 'Classic Juciful orange juice.',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCQOdAWVTNX3n3_UD49KjLSpm7s6VRlWBs_g&s',
                 nutrition: { calories: 120, allergens: 'None' },
                 popular: false,
                 prepTime: 1 // minutes
@@ -507,7 +507,7 @@
                 id: 'm8',
                 name: "St. Mary's Banana Chips",
                 category: 'snack',
-                price: 250,
+                price: 150, // Reduced from 250 (100 reduction)
                 description: 'The classic, crispy, and irresistible banana chips.',
                 image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbDez2r0t_eoHi5EdFvlr0WQpNZNGzZJIgUQ&s',
                 nutrition: { calories: 150, allergens: 'None' },
@@ -518,9 +518,9 @@
                 id: 'm9',
                 name: 'Soldanza Plantain Chips',
                 category: 'snack',
-                price: 250,
+                price: 150, // Reduced from 250 (100 reduction)
                 description: 'Slightly sweet, perfectly crunchy plantain chips.',
-                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScnocXV8-RoAlidPFonI9zqi1XTfxyZPq5_A&s', // <-- UPDATED
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScnocXV8-RoAlidPFonI9zqi1XTfxyZPq5_A&s',
                 nutrition: { calories: 160, allergens: 'None' },
                 popular: false,
                 prepTime: 1
@@ -529,7 +529,7 @@
                 id: 'm10',
                 name: 'Spice Bun & Cheese',
                 category: 'snack',
-                price: 350,
+                price: 250, // As specified in request
                 description: 'A thick slice of National round spice bun with a slice of creamy cheese.',
                 image: 'https://www.mdjamaicandelights.com/cdn/shop/products/national-spiced-bun-NAT583_69b230a9-f81b-4b41-bcee-40a4d88f559a_1200x1200.png?v=1604394642',
                 nutrition: { calories: 380, allergens: 'Gluten, Dairy' },
@@ -538,9 +538,9 @@
             },
             {
                 id: 'm11',
-                name: 'CranWata', // New Item
+                name: 'CranWata',
                 category: 'drink',
-                price: 250,
+                price: 200, // Reduced from 250 (50 reduction)
                 description: 'Refreshing cranberry-flavored water.',
                 image: 'https://freshandexotic.co.uk/cdn/shop/files/1000045710.jpg?v=1728999366&width=713',
                 nutrition: { calories: 90, allergens: 'None' },
@@ -549,9 +549,9 @@
             },
             {
                 id: 'm12',
-                name: 'Minute Maid', // New Item
+                name: 'Minute Maid',
                 category: 'drink',
-                price: 350,
+                price: 300, // Reduced from 350 (50 reduction)
                 description: 'Pulpy orange juice.',
                 image: 'https://kansasfoodmarket.com/cdn/shop/products/ci-minute-maid-orange-ab079a666acca39c_580x.jpg?v=1594872069',
                 nutrition: { calories: 110, allergens: 'None' },
